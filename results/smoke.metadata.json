@@ -1,0 +1,30 @@
+{
+  "versions": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python-sat": "1.9.dev15",
+    "ortools": "9.15.6755",
+    "gurobipy": "13.0.3",
+    "docplex": "2.32.264",
+    "cplex": "22.2.0.1"
+  },
+  "sizes": [
+    1,
+    2,
+    3,
+    4,
+    8,
+    16,
+    32
+  ],
+  "methods": [
+    "sat",
+    "cp-sat",
+    "cplex-mip"
+  ],
+  "encodings": [
+    "sequential"
+  ],
+  "repeats": 2,
+  "time_limit_s": 5.0
+}

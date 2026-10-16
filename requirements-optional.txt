@@ -1,0 +1,6 @@
+# CPLEX MIP, Gurobi, and their Python modeling layers.
+# A usable Gurobi license is still required. IBM CP Optimizer needs
+# the separate cpoptimizer executable from CPLEX Optimization Studio.
+gurobipy==13.0.3
+docplex==2.32.264
+cplex==22.2.0.1
