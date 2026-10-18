@@ -1,9 +1,0 @@
-name: nqueens-btl1
-channels:
-  - conda-forge
-dependencies:
-  - python=3.11
-  - pip
-  - pip:
-      - python-sat==1.9.dev15
-      - ortools==9.15.6755
