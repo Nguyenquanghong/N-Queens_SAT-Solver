@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-10-18T14:32:29.887051",
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python-sat": "1.9.dev15",
+    "ortools": "9.15.6755",
+    "gurobipy": "13.0.3",
+    "docplex": "2.32.264",
+    "cplex": "22.2.0.1"
+  },
+  "cpu_count": 12,
+  "experiment1": {
+    "sizes": [
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "encodings": [
+      "pairwise",
+      "sequential",
+      "binary",
+      "commander",
+      "product"
+    ],
+    "solvers": [
+      "glucose3",
+      "cp-sat"
+    ]
+  },
+  "experiment2": {
+    "sizes": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "solvers": [
+      "Glucose 3",
+      "Glucose 4",
+      "CaDiCaL 1.5",
+      "Minisat 2.2"
+    ],
+    "encoding": "sequential"
+  }
+}

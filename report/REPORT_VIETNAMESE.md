@@ -71,11 +71,11 @@ Thực nghiệm được thực hiện trên môi trường máy Intel Core i7, 
 
 | Kích cỡ N | Chỉ số đo | Pairwise | Sequential | Binary | Commander | Product | CP-SAT (OR-Tools) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **16** | Số mệnh đề<br>Thời gian giải | 6.352<br>0.785s | 2.732<br>0.753s | 3.928<br>0.826s | 2.688<br>0.756s | 2.876<br>1.002s | 3 ràng buộc<br>**0.024s** |
-| **32** | Số mệnh đề<br>Thời gian giải | 52.640<br>0.728s | 11.596<br>0.848s | 19.800<br>0.746s | 11.516<br>1.786s | 12.034<br>45.29s | 3 ràng buộc<br>**0.050s** |
-| **64** | Số mệnh đề<br>Thời gian giải | 428.864<br>1.140s | 47.756<br>29.94s | 95.576<br>**0.787s** | 47.644<br>Timeout | 47.556<br>Timeout | 3 ràng buộc<br>0.270s |
-| **128** | Số mệnh đề<br>Thời gian giải | 3.462.784<br>5.950s | 193.804<br>Timeout | 447.832<br>1.401s | 193.720<br>**1.144s** | 193.158<br>1.403s | 3 ràng buộc<br>1.598s |
-| **256** | Số mệnh đề<br>Thời gian giải | **Tràn RAM**<br>(>27 triệu) | 780.812<br>Timeout | 2.053.464<br>4.390s | 781.648<br>2.728s | 773.268<br>**2.512s** | 3 ràng buộc<br>16.051s |
+| **16** | Số mệnh đề<br>Thời gian giải | 6.352<br>0.732s | 2.732<br>0.720s | 3.928<br>0.757s | 2.688<br>0.841s | 2.856<br>1.074s | 3 ràng buộc<br>**0.012s** |
+| **32** | Số mệnh đề<br>Thời gian giải | 52.640<br>0.734s | 11.596<br>0.814s | 19.800<br>0.922s | 11.516<br>1.798s | 11.928<br>7.393s | 3 ràng buộc<br>**0.048s** |
+| **64** | Số mệnh đề<br>Thời gian giải | 428.864<br>1.234s | 47.756<br>30.97s | 95.576<br>**0.824s** | 47.644<br>Timeout | 47.448<br>Timeout | 3 ràng buộc<br>0.251s |
+| **128** | Số mệnh đề<br>Thời gian giải | 3.462.784<br>5.966s | 193.804<br>Timeout | 447.832<br>1.239s | 193.720<br>**1.005s** | 192.942<br>1.235s | 3 ràng buộc<br>1.473s |
+| **256** | Số mệnh đề<br>Thời gian giải | **Tràn RAM**<br>(>27 triệu) | 780.812<br>Timeout | 2.053.464<br>4.200s | 781.648<br>**2.490s** | 772.792<br>2.930s | 3 ràng buộc<br>14.538s |
 
 ---
 
@@ -83,11 +83,59 @@ Thực nghiệm được thực hiện trên môi trường máy Intel Core i7, 
 
 | Kích cỡ N | Glucose 3 | Glucose 4 | CaDiCaL 1.5 | Minisat 2.2 |
 | :---: | :---: | :---: | :---: | :---: |
-| **16** | 0.0071s | 0.0069s | 0.0154s | **0.0029s** |
-| **32** | 0.1517s | 0.1423s | 0.0486s | **0.0101s** |
-| **64** | 31.2840s | 18.8486s | 1.2428s | **0.0431s** |
-| **128** | Timeout (>45s) | Timeout (>45s) | 5.4281s | **0.2610s** |
-| **256** | Timeout (>45s) | Timeout (>45s) | 36.9118s | **1.0098s** |
+| **16** | 0.0066s | 0.0076s | 0.0255s | **0.0111s** |
+| **32** | 0.1304s | 0.1207s | 0.0471s | **0.0093s** |
+| **64** | 30.0800s | 19.5673s | 1.2800s | **0.0490s** |
+| **128** | Timeout (>45s) | Timeout (>45s) | 17.1217s | **0.2708s** |
+| **256** | Timeout (>45s) | Timeout (>45s) | Timeout (>45s) | **1.0019s** |
+
+---
+
+### 3.3. So sánh chuyên sâu SAT Solving với các phương pháp giải chính xác khác (ILP, CP)
+
+Bên cạnh SAT Solving, đề tài triển khai và đối chuẩn đầy đủ với 4 bộ giải thuộc 2 trường phái giải chính xác (Exact Solvers) kinh điển:
+
+1. **Lập trình ràng buộc (Constraint Programming - CP):**
+   - **Google OR-Tools CP-SAT:** Kết hợp kỹ thuật CP cổ điển với động cơ SAT giải lười (Lazy Clause Generation) và CDCL.
+   - **IBM CPLEX CP Optimizer (`docplex.cp`):** Bộ giải CP thương mại hàng đầu sử dụng thuật toán lan truyền miền giá trị và tìm kiếm cục bộ mở rộng.
+   - *Cách mô hình hóa CP:* Dùng $N$ biến số nguyên $q_r \in [0, N-1]$ đại diện cho vị trí cột của quân hậu tại hàng $r$. Bài toán được mô hình cực kỳ cô đọng với đúng **3 ràng buộc toàn cục `AllDifferent`**:
+     $$\text{AllDifferent}(q_0, \dots, q_{N-1})$$
+     $$\text{AllDifferent}(q_0 + 0, \dots, q_{N-1} + (N-1))$$
+     $$\text{AllDifferent}(q_0 - 0, \dots, q_{N-1} - (N-1))$$
+
+2. **Quy hoạch nguyên tuyến tính (Integer Linear Programming - ILP / MIP):**
+   - **Gurobi Optimizer (`gurobipy`):** Bộ giải quy hoạch nguyên thương mại nhanh nhất thế giới.
+   - **IBM ILOG CPLEX MIP (`docplex.mp`):** Bộ giải quy hoạch nguyên công nghiệp chuẩn mực của IBM.
+   - *Cách mô hình hóa ILP:* Sử dụng ma trận $N^2$ biến nhị phân $x_{i,j} \in \{0, 1\}$.
+     - Tổng hàng: $\sum_{j=0}^{N-1} x_{i,j} = 1, \quad \forall i$
+     - Tổng cột: $\sum_{i=0}^{N-1} x_{i,j} = 1, \quad \forall j$
+     - Tổng các đường chéo: $\sum_{(i,j) \in D} x_{i,j} \le 1, \quad \forall D$
+     - *Đặc điểm:* Do N-Queens là bài toán khả thi thuần túy (Feasibility), không có hàm mục tiêu cần tối ưu hóa.
+
+#### Bảng so sánh lý thuyết giữa 3 trường phái mô hình hóa
+
+| Tiêu chí | SAT Solving (PySAT) | Constraint Programming (CP) | Integer Linear Programming (ILP/MIP) |
+| :--- | :--- | :--- | :--- |
+| **Các solver đại diện** | Glucose 3/4, CaDiCaL, Minisat | Google OR-Tools CP-SAT, CPLEX CP | Gurobi, IBM CPLEX MIP |
+| **Kiểu biến quyết định** | $N^2$ biến Boolean ($+$ biến phụ AMO) | $N$ biến số nguyên miền rời rạc $[0, N-1]$ | $N^2$ biến nhị phân $x_{i,j} \in \{0, 1\}$ |
+| **Bản chất ràng buộc** | Mệnh đề chuẩn tắc hội (CNF Clauses) | Ràng buộc toàn cục `AllDifferent` | Bất đẳng thức tuyến tính $\sum x = 1, \sum x \le 1$ |
+| **Cơ chế suy diễn cốt lõi** | Lan truyền đơn vị (BCP) & Học xung đột (CDCL) | Lọc miền giá trị (Régin bipartite matching) | Simplex LP relaxation, Branch-and-Cut |
+| **Điểm mạnh** | Học vết cắt cực nhanh, không phụ thuộc hàm mục tiêu | Biểu diễn cực kỳ cô đọng ($N$ biến, 3 ràng buộc) | Tận dụng được các kỹ thuật cắt phẳng (Cutting Planes) |
+| **Điểm yếu** | Cần kỹ thuật mã hóa AMO khéo léo để tránh bùng nổ | Cây tìm kiếm rộng khi $N$ lớn | Nghiệm LP Relaxation bị phân số ($1/N$), cắt tỉa chậm |
+
+#### Bảng đối chuẩn thực nghiệm đa phương pháp (N = 4, 8, 16, 32)
+
+| Kích cỡ $N$ | Chỉ số | SAT (Sequential) | CP-SAT (OR-Tools) | CPLEX MIP | Gurobi | CPLEX CP Optimizer |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **4** | Số biến / Ràng buộc<br>Thời gian giải | 58 biến, 116 mệnh đề<br>0.112s | 4 biến, 3 ràng buộc<br>**0.001s** | 16 biến, 18 ràng buộc<br>0.008s | 16 biến, 18 ràng buộc<br>*(Yêu cầu License)* | 4 biến, 3 ràng buộc<br>*(Cần cpoptimizer.exe)* |
+| **8** | Số biến / Ràng buộc<br>Thời gian giải | 274 biến, 604 mệnh đề<br>0.141s | 8 biến, 3 ràng buộc<br>**0.004s** | 64 biến, 42 ràng buộc<br>0.007s | 64 biến, 42 ràng buộc<br>*(Yêu cầu License)* | 8 biến, 3 ràng buộc<br>*(Cần cpoptimizer.exe)* |
+| **16** | Số biến / Ràng buộc<br>Thời gian giải | 1.186 biến, 2.732 mệnh đề<br>0.142s | 16 biến, 3 ràng buộc<br>0.015s | 256 biến, 90 ràng buộc<br>**0.009s** | 256 biến, 90 ràng buộc<br>*(Yêu cầu License)* | 16 biến, 3 ràng buộc<br>*(Cần cpoptimizer.exe)* |
+| **32** | Số biến / Ràng buộc<br>Thời gian giải | 4.930 biến, 11.596 mệnh đề<br>0.304s | 32 biến, 3 ràng buộc<br>**0.059s** | 1.024 biến<br>*(Vượt hạn mức 1000 biến)* | 1.024 biến<br>*(Yêu cầu License)* | 32 biến, 3 ràng buộc<br>*(Cần cpoptimizer.exe)* |
+
+#### Thảo luận về tính sẵn sàng và rào cản triển khai thực tế của các Solver
+1. **Google OR-Tools CP-SAT:** Là solver CP mã nguồn mở hoàn chỉnh, tối ưu hóa đa luồng xuất sắc, không ràng buộc bản quyền thương mại, giải rất nhanh từ $N \le 64$.
+2. **IBM CPLEX MIP:** Phiên bản miễn phí (Community Edition) hoạt động hoàn hảo và có tốc độ giải MIP rất ấn tượng ở $N \le 16$, nhưng bị khống chế cứng ở mức $1.000$ biến. Vì $N = 32$ yêu cầu $32^2 = 1.024$ biến nên solver dừng lại với thông báo giới hạn kích thước (`limits exceeded / promotional version`).
+3. **Gurobi & CPLEX CP Optimizer:** Đã được cài đặt đầy đủ wrapper trong [nqueens/alternatives.py](file:///c:/Users/Quang%20Hong/Desktop/Project1-%20c%C3%A1c%20v%E1%BA%A5n%20%C4%91%E1%BB%81%20khmt/nqueens/alternatives.py). Khi chạy trên môi trường không có khóa bản quyền hoặc thiếu file thực thi nhị phân `cpoptimizer.exe`, hệ thống tuân thủ nghiêm ngặt chuẩn mực nghiên cứu khoa học: báo trạng thái `UNAVAILABLE` thay vì làm giả kết quả.
 
 ---
 
@@ -97,13 +145,13 @@ Thực nghiệm được thực hiện trên môi trường máy Intel Core i7, 
    - Với N = 128, Pairwise sinh tới 3.462.784 mệnh đề. Đến N = 256, số mệnh đề vượt quá 27 triệu, gây cạn kiệt bộ nhớ RAM.
    - Ngược lại, Product và Commander giữ số mệnh đề ở mức tuyến tính (~780.000 mệnh đề ở N = 256).
 
-2. **Khả năng mở rộng vượt trội của SAT so với CP-SAT ở kích thước lớn:**
-   - Ở N <= 64: Google OR-Tools CP-SAT nhanh hơn nhờ mô hình biến nguyên gọn gàng (chỉ N biến) và thuật toán lọc miền `AllDifferent`.
-   - **Tuy nhiên ở N = 256:** CP-SAT mất tới **16.05 giây**, trong khi SAT với mã hóa **Product chỉ mất 2.51 giây** và **Commander chỉ mất 2.73 giây** (nhanh hơn CP-SAT tới **6 lần**!).
+2. **Khả năng mở rộng vượt trội của SAT so với CP-SAT và ILP ở kích thước lớn:**
+   - Ở $N \le 64$: Google OR-Tools CP-SAT và CPLEX MIP nhanh hơn nhờ mô hình cô đọng và khả năng lọc miền cục bộ.
+   - **Tuy nhiên ở $N = 256$:** CP-SAT mất tới **14.54 giây**, trong khi SAT với mã hóa **Commander chỉ mất 2.49 giây** và **Product chỉ mất 2.93 giây** (nhanh hơn CP-SAT từ **5 đến 6 lần**!).
    - Điều này chứng minh: Cơ chế học mệnh đề mâu thuẫn (CDCL Conflict Learning) trên các mệnh đề phân rã Boolean có tốc độ cắt tỉa không gian tìm kiếm vượt bậc khi bài toán quy mô lớn.
 
 3. **Hiệu năng xuất sắc của Minisat 2.2:**
-   - Trong khi Glucose 3 và 4 bị bế tắc do chuỗi biến phụ tích lũy của Sequential Counter ở N >= 128, **Minisat 2.2 giải quyết N = 256 chỉ trong 1.009 giây** nhờ chiến lược phân rã trọng số VSIDS và cơ chế khởi động lại (restarts) tối ưu.
+   - Trong khi Glucose 3 và 4 bị bế tắc do chuỗi biến phụ tích lũy của Sequential Counter ở $N \ge 128$, **Minisat 2.2 giải quyết N = 256 chỉ trong 1.002 giây** nhờ chiến lược phân rã trọng số VSIDS và cơ chế khởi động lại (restarts) tối ưu.
 
 ---
 

@@ -30,7 +30,7 @@ from nqueens.sat import solve_sat, ENCODINGS
 from nqueens.alternatives import solve_cp_sat
 
 
-def run_encodings_experiment():
+def run_encodings_experiment(force: bool = False):
     print("=================================================================")
     print("EXPERIMENT 1: 5 SAT ENCODINGS AND CP-SAT BENCHMARK (LARGE N)")
     print("=================================================================")
@@ -42,7 +42,7 @@ def run_encodings_experiment():
     out_dir = PROJECT_ROOT / "results"
     out_dir.mkdir(parents=True, exist_ok=True)
     csv_path = out_dir / "benchmark_encodings.csv"
-    if csv_path.exists():
+    if not force and csv_path.exists():
         print(f"\n=> Loaded existing Experiment 1 results from: {csv_path}")
         with open(csv_path, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
@@ -250,7 +250,33 @@ def plot_charts(enc_results, solver_results):
 
 
 if __name__ == "__main__":
-    enc_results = run_encodings_experiment()
+    import argparse
+    parser = argparse.ArgumentParser(description="Run N-Queens paper experiments")
+    parser.add_argument("--force", action="store_true", help="Force rerun of Experiment 1 even if CSV exists")
+    args = parser.parse_args()
+
+    enc_results = run_encodings_experiment(force=args.force)
     solver_results = run_solvers_experiment()
     plot_charts(enc_results, solver_results)
+    from nqueens.__main__ import versions
+    import datetime
+    meta = {
+        "timestamp": datetime.datetime.now().isoformat(),
+        "environment": versions(),
+        "cpu_count": os.cpu_count(),
+        "experiment1": {
+            "sizes": [4, 8, 16, 32, 64, 128, 256],
+            "encodings": ["pairwise", "sequential", "binary", "commander", "product"],
+            "solvers": ["glucose3", "cp-sat"]
+        },
+        "experiment2": {
+            "sizes": [16, 32, 64, 128, 256],
+            "solvers": ["Glucose 3", "Glucose 4", "CaDiCaL 1.5", "Minisat 2.2"],
+            "encoding": "sequential"
+        }
+    }
+    meta_path = PROJECT_ROOT / "results" / "benchmark_experiments.metadata.json"
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump(meta, f, indent=2, ensure_ascii=False)
+    print(f"  + Saved metadata to: {meta_path}")
     print("\n[COMPLETE] All experimental data and scientific figures are ready!")
